@@ -22,7 +22,7 @@ import {
 } from "./ui/select";
 
 // ✅ Web3Forms access key (public by design)
-const WEB3FORMS_ACCESS_KEY = "d4664fae-352c-4025-88ae-9b2d3dbd1dc4";
+const WEB3FORMS_ACCESS_KEY = "0f0f635f-4d05-403c-a0c0-921144b143e4";
 // ✅ Your Web3Forms Template ID (from Dashboard → Templates)
 const WEB3FORMS_TEMPLATE_ID = "tmpl_XXXXXXXX"; // <-- REPLACE ME
 
