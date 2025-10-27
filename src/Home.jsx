@@ -20,39 +20,50 @@ import FAQ from "./components/FAQ";
 
 /* ----------------- Small helpers ----------------- */
 
-
-
 function AnimatedBackground() {
   const reduce = useReducedMotion();
+
+  // Detect mobile once; used to lighten effects
+  const isMobile = useMemo(
+    () => typeof window !== "undefined" && matchMedia("(max-width: 640px)").matches,
+    []
+  );
+
   return (
-    <div className="fixed inset-0 -z-50">
+    <div className="fixed inset-0 -z-50 pointer-events-none">
+      {/* soft base gradient always on */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100" />
+
       {reduce ? (
         <div className="absolute inset-0" />
       ) : (
         <>
+          {/* animated radial wash – keep even on mobile, but very light */}
           <motion.div
             animate={{
               background: [
-                "radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.03) 0%, transparent 50%)",
-                "radial-gradient(circle at 80% 20%, rgba(120, 119, 198, 0.03) 0%, transparent 50%)",
-                "radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.03) 0%, transparent 50%)",
+                "radial-gradient(circle at 20% 80%, rgba(120,119,198,0.03) 0%, transparent 50%)",
+                "radial-gradient(circle at 80% 20%, rgba(120,119,198,0.03) 0%, transparent 50%)",
+                "radial-gradient(circle at 40% 40%, rgba(120,119,198,0.03) 0%, transparent 50%)",
               ],
             }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: isMobile ? 12 : 10, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0"
+            style={{ filter: isMobile ? "opacity(0.6)" : "opacity(1)" }}
           />
+
+          {/* decorative shapes – hide on mobile to avoid clutter / jank */}
           <motion.div
-            animate={{ rotate: [0, 360], scale: [1, 1.08, 1] }}
+            animate={{ rotate: [0, 360], scale: [1, 1.06, 1] }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/4 left-1/4 w-32 h-32 border border-gray-200/30 rounded-full"
+            className="absolute top-1/4 left-1/4 w-32 h-32 border border-gray-200/30 rounded-full hidden sm:block"
           />
           <motion.div
-            animate={{ rotate: [360, 0], scale: [1, 0.92, 1] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-1/4 right-1/4 w-24 h-24 border border-gray-200/20 rounded-lg"
+            animate={{ rotate: [360, 0], scale: [1, 0.94, 1] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+            className="absolute bottom-1/4 right-1/4 w-24 h-24 border border-gray-200/20 rounded-lg hidden sm:block"
           />
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 hidden sm:block">
             <div className="absolute top-1/3 left-1/3 w-2 h-2 bg-gray-300/20 rounded-full" />
             <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-gray-300/30 rounded-full" />
             <div className="absolute top-2/3 left-2/3 w-1.5 h-1.5 bg-gray-300/25 rounded-full" />
@@ -67,8 +78,7 @@ function AnimatedBackground() {
 function MouseFollower() {
   const reduce = useReducedMotion();
   const hasFinePointer = useMemo(
-    () =>
-      typeof window !== "undefined" && matchMedia("(pointer: fine)").matches,
+    () => typeof window !== "undefined" && matchMedia("(pointer: fine)").matches,
     []
   );
   const x = useMotionValue(-100);
@@ -113,106 +123,120 @@ export default function Home() {
     restDelta: 0.001,
   });
 
+  const reduce = useReducedMotion();
+  const isMobile = useMemo(
+    () => typeof window !== "undefined" && matchMedia("(max-width: 640px)").matches,
+    []
+  );
+
+  // Softer durations for mobile/reduced motion
+  const dur = reduce ? 0.0 : isMobile ? 0.55 : 0.9;
+  const ease = [0.25, 0.46, 0.45, 0.94];
+
   return (
-    <div id="top" className="min-h-screen relative overflow-hidden">
+    <div id="top" className="min-h-dvh relative overflow-hidden">
       <AnimatedBackground />
       <MouseFollower />
 
-      {/* Top progress bar */}
+      {/* Top progress bar (kept above content, below header if header is solid) */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gray-900 to-transparent origin-left z-50"
+        className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gray-900 to-transparent origin-left z-40"
         style={{ scaleX }}
         aria-hidden="true"
       />
 
       <Header />
 
-      <main id="main" className="relative">
+      {/* Offset for fixed header + safe-area so first section isn’t hidden */}
+      <main
+        id="main"
+        className="relative pt-[calc(var(--header-h)+var(--safe-top))] scroll-smooth"
+      >
         {/* Hero */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.985 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+          initial={reduce ? false : { opacity: 0, scale: 0.985 }}
+          animate={reduce ? {} : { opacity: 1, scale: 1 }}
+          transition={{ duration: dur, ease }}
+          className="transform-gpu will-change-transform"
         >
           <Hero />
         </motion.div>
 
         {/* Credibility - Trust & Results */}
-        <section id="about" aria-label="About section">
+        <section id="about" aria-label="About section" className="scroll-mt-[var(--header-h)]">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
+            initial={reduce ? false : { opacity: 0, y: 40 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: dur * 0.9, ease }}
+            viewport={{ once: true, amount: isMobile ? 0.15 : 0.25, margin: isMobile ? "-40px" : "-100px" }}
+            className="transform-gpu will-change-transform"
           >
             <TrustResults />
           </motion.div>
         </section>
 
         {/* Services */}
-        <section id="services" aria-label="Services section">
+        <section id="services" aria-label="Services section" className="scroll-mt-[var(--header-h)]">
           <motion.div
-            initial={{ opacity: 0, y: 80 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.8,
-              ease: [0.25, 0.46, 0.45, 0.94],
-              delay: 0.05,
-            }}
-            viewport={{ once: true, amount: 0.2 }}
+            initial={reduce ? false : { opacity: 0, y: 60 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: dur, ease, delay: 0.04 }}
+            viewport={{ once: true, amount: isMobile ? 0.15 : 0.2 }}
+            className="transform-gpu will-change-transform"
           >
             <Services />
           </motion.div>
         </section>
 
         {/* Testimonials */}
-        <section id="testimonials" aria-label="Testimonials section">
+        <section id="testimonials" aria-label="Testimonials section" className="scroll-mt-[var(--header-h)]">
           <motion.div
-            initial={{ opacity: 0, x: -80 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{
-              duration: 0.9,
-              ease: [0.25, 0.46, 0.45, 0.94],
-              delay: 0.05,
-            }}
-            viewport={{ once: true, amount: 0.2 }}
+            initial={reduce ? false : { opacity: 0, x: isMobile ? 0 : -60 }}
+            whileInView={reduce ? {} : { opacity: 1, x: 0 }}
+            transition={{ duration: dur, ease, delay: 0.04 }}
+            viewport={{ once: true, amount: isMobile ? 0.15 : 0.2 }}
+            className="transform-gpu will-change-transform"
           >
             <Testimonials />
           </motion.div>
         </section>
 
         {/* Booking */}
-        <section id="booking" aria-label="Booking section">
+        <section id="booking" aria-label="Booking section" className="scroll-mt-[var(--header-h)]">
           <motion.div
-            initial={{ opacity: 0, y: 80, rotateX: 8 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-            viewport={{ once: true, amount: 0.2 }}
-            className="perspective-1000"
+            initial={reduce ? false : { opacity: 0, y: 60, rotateX: isMobile ? 0 : 6 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: dur, ease }}
+            viewport={{ once: true, amount: isMobile ? 0.15 : 0.2 }}
+            className="perspective-1000 transform-gpu will-change-transform"
           >
             <Booking />
           </motion.div>
         </section>
 
         {/* FAQ */}
-        <section id="faqs" aria-label="Frequently Asked Questions">
+        <section id="faqs" aria-label="Frequently Asked Questions" className="scroll-mt-[var(--header-h)]">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.05 }}
-            viewport={{ once: true, margin: "-100px" }}
+            initial={reduce ? false : { opacity: 0, y: 40 }}
+            whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+            transition={{ duration: dur * 0.9, ease, delay: 0.03 }}
+            viewport={{ once: true, amount: isMobile ? 0.15 : 0.25, margin: isMobile ? "-40px" : "-100px" }}
+            className="transform-gpu will-change-transform"
           >
             <FAQ />
           </motion.div>
         </section>
 
         {/* Contact */}
-        <section id="contact" aria-label="Contact section">
+        <section id="contact" aria-label="Contact section" className="scroll-mt-[var(--header-h)]">
           <motion.div
-            initial={{ opacity: 0, scale: 0.94, filter: "blur(8px)" }}
-            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.0, ease: [0.25, 0.46, 0.45, 0.94] }}
-            viewport={{ once: true, amount: 0.2 }}
+            initial={
+              reduce ? false : { opacity: 0, scale: isMobile ? 1 : 0.96, filter: "blur(6px)" }
+            }
+            whileInView={reduce ? {} : { opacity: 1, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: dur * 1.1, ease }}
+            viewport={{ once: true, amount: isMobile ? 0.15 : 0.2 }}
+            className="transform-gpu will-change-transform"
           >
             <Contact />
           </motion.div>
@@ -221,10 +245,11 @@ export default function Home() {
 
       {/* Footer */}
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+        initial={reduce ? false : { opacity: 0, y: 30 }}
+        whileInView={reduce ? {} : { opacity: 1, y: 0 }}
+        transition={{ duration: dur * 0.8, ease }}
         viewport={{ once: true, amount: 0.2 }}
+        className="transform-gpu will-change-transform"
       >
         <Footer />
       </motion.div>
