@@ -8,9 +8,12 @@ import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Home from "./Home";
+import { Toaster } from "react-hot-toast";
+
 const App = () => {
   return (
     <div>
+      <Toaster/>
       <Home />
     </div>
   );

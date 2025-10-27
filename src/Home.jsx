@@ -1,13 +1,13 @@
 // src/App.jsx
 import React, { useEffect, useMemo } from "react";
-
 import {
   motion,
   useScroll,
   useSpring,
   useReducedMotion,
   useMotionValue,
-} from "framer-motion";
+} from "motion/react";
+
 import Header from "./components/Header";
 import Services from "./components/Services";
 import Booking from "./components/Booking";
@@ -15,6 +15,8 @@ import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
+import TrustResults from "./components/TrustResults";
+import FAQ from "./components/FAQ";
 
 /* ----------------- Small helpers ----------------- */
 
@@ -31,18 +33,13 @@ function SkipLink() {
 
 function AnimatedBackground() {
   const reduce = useReducedMotion();
-
   return (
     <div className="fixed inset-0 -z-50">
-      {/* Base gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100" />
-
-      {/* If user prefers reduced motion, keep it calm */}
       {reduce ? (
         <div className="absolute inset-0" />
       ) : (
         <>
-          {/* Animated gradient orbs */}
           <motion.div
             animate={{
               background: [
@@ -54,20 +51,16 @@ function AnimatedBackground() {
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0"
           />
-
-          {/* Floating geometric shapes */}
           <motion.div
-            animate={{ rotate: [0, 360], scale: [1, 1.1, 1] }}
+            animate={{ rotate: [0, 360], scale: [1, 1.08, 1] }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             className="absolute top-1/4 left-1/4 w-32 h-32 border border-gray-200/30 rounded-full"
           />
           <motion.div
-            animate={{ rotate: [360, 0], scale: [1, 0.9, 1] }}
+            animate={{ rotate: [360, 0], scale: [1, 0.92, 1] }}
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
             className="absolute bottom-1/4 right-1/4 w-24 h-24 border border-gray-200/20 rounded-lg"
           />
-
-          {/* Subtle 'neural' dots */}
           <div className="absolute inset-0">
             <div className="absolute top-1/3 left-1/3 w-2 h-2 bg-gray-300/20 rounded-full" />
             <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-gray-300/30 rounded-full" />
@@ -82,15 +75,11 @@ function AnimatedBackground() {
 
 function MouseFollower() {
   const reduce = useReducedMotion();
-
-  // Respect touch devices / coarse pointers to avoid weird UX
   const hasFinePointer = useMemo(
     () =>
       typeof window !== "undefined" && matchMedia("(pointer: fine)").matches,
     []
   );
-
-  // motion values = no re-renders while following the cursor
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
 
@@ -98,7 +87,6 @@ function MouseFollower() {
     if (!hasFinePointer || reduce) return;
     let raf;
     const handle = (e) => {
-      // Use rAF to keep it ultra-smooth on high-frequency mousemove
       raf = requestAnimationFrame(() => {
         x.set(e.clientX - 12);
         y.set(e.clientY - 12);
@@ -117,6 +105,7 @@ function MouseFollower() {
     <motion.div
       className="fixed w-6 h-6 pointer-events-none z-40 mix-blend-difference"
       style={{ x, y }}
+      aria-hidden="true"
     >
       <div className="w-full h-full bg-white rounded-full opacity-80" />
     </motion.div>
@@ -134,7 +123,7 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div id="top" className="min-h-screen relative overflow-hidden">
       <SkipLink />
       <AnimatedBackground />
       <MouseFollower />
@@ -149,7 +138,7 @@ export default function Home() {
       <Header />
 
       <main id="main" className="relative">
-        {/* Hero with enhanced entrance */}
+        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, scale: 0.985 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -158,61 +147,93 @@ export default function Home() {
           <Hero />
         </motion.div>
 
-        {/* Services with reveal */}
-        <motion.div
-          initial={{ opacity: 0, y: 80 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            delay: 0.1,
-          }}
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <Services />
-        </motion.div>
+        {/* Credibility - Trust & Results */}
+        <section id="about" aria-label="About section">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <TrustResults />
+          </motion.div>
+        </section>
 
-        {/* Booking with subtle 3D */}
-        <motion.div
-          initial={{ opacity: 0, y: 80, rotateX: 8 }}
-          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-          viewport={{ once: true, amount: 0.2 }}
-          className="perspective-1000"
-        >
-          <Booking />
-        </motion.div>
+        {/* Services */}
+        <section id="services" aria-label="Services section">
+          <motion.div
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.8,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              delay: 0.05,
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <Services />
+          </motion.div>
+        </section>
 
-        {/* Testimonials slide-in */}
-        <motion.div
-          initial={{ opacity: 0, x: -80 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{
-            duration: 0.9,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            delay: 0.1,
-          }}
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <Testimonials />
-        </motion.div>
+        {/* Testimonials */}
+        <section id="testimonials" aria-label="Testimonials section">
+          <motion.div
+            initial={{ opacity: 0, x: -80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.9,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              delay: 0.05,
+            }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <Testimonials />
+          </motion.div>
+        </section>
 
-        {/* Contact with morphing entrance */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.94, filter: "blur(8px)" }}
-          whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 1.0, ease: [0.25, 0.46, 0.45, 0.94] }}
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <Contact />
-        </motion.div>
+        {/* Booking */}
+        <section id="booking" aria-label="Booking section">
+          <motion.div
+            initial={{ opacity: 0, y: 80, rotateX: 8 }}
+            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true, amount: 0.2 }}
+            className="perspective-1000"
+          >
+            <Booking />
+          </motion.div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faqs" aria-label="Frequently Asked Questions">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.05 }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <FAQ />
+          </motion.div>
+        </section>
+
+        {/* Contact */}
+        <section id="contact" aria-label="Contact section">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, filter: "blur(8px)" }}
+            whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 1.0, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <Contact />
+          </motion.div>
+        </section>
       </main>
 
-      {/* Footer reveal */}
+      {/* Footer */}
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         viewport={{ once: true, amount: 0.2 }}
       >
         <Footer />

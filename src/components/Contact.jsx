@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 // ✅ Web3Forms access key (public by design)
 const WEB3FORMS_ACCESS_KEY = "d4664fae-352c-4025-88ae-9b2d3dbd1dc4";
@@ -24,7 +25,8 @@ export default function Contact() {
   const [success, setSuccess] = useState(false);
 
   const MAX_MSG = 1000;
-  const setVal = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const setVal = (key) => (e) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const validate = () => {
     const next = {};
@@ -52,7 +54,7 @@ export default function Contact() {
       fd.append("access_key", WEB3FORMS_ACCESS_KEY);
       // Common fields (you can name them whatever you like)
       fd.append("name", form.name);
-      fd.append("email", form.email);   // becomes Reply-To automatically
+      fd.append("email", form.email); // becomes Reply-To automatically
       fd.append("phone", form.phone);
       fd.append("subject", form.subject); // Web3Forms uses `subject` (no underscore)
       fd.append("message", form.message);
@@ -67,11 +69,20 @@ export default function Contact() {
 
       const data = await res.json();
       if (!res.ok || !data?.success) {
-        throw new Error(data?.body?.message || "Could not send message. Please try again.");
+        throw new Error(
+          data?.body?.message || "Could not send message. Please try again."
+        );
       }
 
       setSuccess(true);
-      setForm({ name: "", email: "", phone: "", subject: "", message: "", website: "" });
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+        website: "",
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setErrors((prev) => ({ ...prev, submit: err.message }));
@@ -80,12 +91,12 @@ export default function Contact() {
     }
   };
 
-  const PHONE_NUMBER = "+92 300 0000000";
-  const whatsapp = () => window.open("https://wa.me/923000000000", "_blank");
+  const PHONE_NUMBER = "+923203115577";
+  const whatsapp = () => window.open("https://wa.me/+923203115577", "_blank");
   const copyPhone = async () => {
     try {
       await navigator.clipboard.writeText(PHONE_NUMBER);
-      alert("Phone number copied!");
+      toast.success("Phone Number Copied to Clipboard");
     } catch {}
   };
 
@@ -99,9 +110,12 @@ export default function Contact() {
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <h2 className="text-4xl lg:text-5xl mb-6 tracking-tight">Let's Connect</h2>
+          <h2 className="text-4xl lg:text-5xl mb-6 tracking-tight">
+            Let's Connect
+          </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-            Ready to begin your healing journey? Reach out to Dr. Alia Misbah for personalized care.
+            Ready to begin your healing journey? Reach out to Dr. Alia Misbah
+            for personalized care.
           </p>
         </motion.div>
 
@@ -150,7 +164,9 @@ export default function Contact() {
                       placeholder="Your full name"
                       className="border-gray-200 rounded-xl bg-white"
                     />
-                    {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
+                    {errors.name && (
+                      <p className="text-sm text-red-600">{errors.name}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -164,7 +180,9 @@ export default function Contact() {
                       placeholder="your.email@example.com"
                       className="border-gray-200 rounded-xl bg-white"
                     />
-                    {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
+                    {errors.email && (
+                      <p className="text-sm text-red-600">{errors.email}</p>
+                    )}
                   </div>
                 </div>
 
@@ -179,7 +197,9 @@ export default function Contact() {
                     placeholder="+92 300 0000000"
                     className="border-gray-200 rounded-xl bg-white"
                   />
-                  {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+                  {errors.phone && (
+                    <p className="text-sm text-red-600">{errors.phone}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -192,7 +212,9 @@ export default function Contact() {
                     placeholder="What would you like to discuss?"
                     className="border-gray-200 rounded-xl bg-white"
                   />
-                  {errors.subject && <p className="text-sm text-red-600">{errors.subject}</p>}
+                  {errors.subject && (
+                    <p className="text-sm text-red-600">{errors.subject}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -207,8 +229,14 @@ export default function Contact() {
                     className="border-gray-200 rounded-xl bg-white"
                   />
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    {errors.message ? <p className="text-red-600">{errors.message}</p> : <span>&nbsp;</span>}
-                    <span>{form.message.length}/{MAX_MSG}</span>
+                    {errors.message ? (
+                      <p className="text-red-600">{errors.message}</p>
+                    ) : (
+                      <span>&nbsp;</span>
+                    )}
+                    <span>
+                      {form.message.length}/{MAX_MSG}
+                    </span>
                   </div>
                 </div>
 
@@ -226,10 +254,13 @@ export default function Contact() {
                   )}
                 </Button>
 
-                {errors.submit && <p className="text-sm text-red-600 mt-2">{errors.submit}</p>}
+                {errors.submit && (
+                  <p className="text-sm text-red-600 mt-2">{errors.submit}</p>
+                )}
 
                 <p className="text-sm text-gray-600 text-center font-light">
-                  Your privacy is important to us. Information will never be shared with third parties.
+                  Your privacy is important to us. Information will never be
+                  shared with third parties.
                 </p>
               </form>
             </div>
@@ -253,17 +284,35 @@ export default function Contact() {
                   </div>
                   <div>
                     <h4 className="text-lg mb-1 text-gray-900">Phone</h4>
-                    <p className="text-gray-600 font-light">{PHONE_NUMBER}</p>
-                    <p className="text-sm text-gray-500">Available during consultation hours</p>
+                    <p className="text-gray-600 font-semibold">
+                      {PHONE_NUMBER}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Available during consultation hours
+                    </p>
 
                     <div className="mt-3 flex gap-2">
-                      <Button variant="outline" className="rounded-full px-4" asChild>
-                        <a href={`tel:${PHONE_NUMBER.replace(/\s+/g, "")}`}>Call</a>
+                      <Button
+                        variant="outline"
+                        className="rounded-full px-4 cursor-pointer hover:bg-gray-700 hover:text-white"
+                        asChild
+                      >
+                        <a href={`tel:${PHONE_NUMBER.replace(/\s+/g, "")}`}>
+                          Call
+                        </a>
                       </Button>
-                      <Button variant="outline" className="rounded-full px-4" onClick={whatsapp}>
+                      <Button
+                        variant="outline"
+                        className="rounded-full px-4 cursor-pointer hover:bg-gray-700 hover:text-white"
+                        onClick={whatsapp}
+                      >
                         WhatsApp
                       </Button>
-                      <Button variant="outline" className="rounded-full px-4" onClick={copyPhone}>
+                      <Button
+                        variant="outline"
+                        className="rounded-full pcx-4 cursor-pointer hover:bg-gray-700 hover:text-white"
+                        onClick={copyPhone}
+                      >
                         Copy
                       </Button>
                     </div>
@@ -273,14 +322,26 @@ export default function Contact() {
 
               <div className="mt-8 pt-8 border-t border-gray-100">
                 <div className="flex items-center gap-3 mb-4">
-                  <Heart className="w-5 h-5 text-gray-600" />
+                  <Heart className="w-5 h-5 text-gray-600 fill-gray-600 " />
                   <span className="text-gray-700">Available Services</span>
                 </div>
                 <div className="space-y-2 text-sm text-gray-600">
-                  <div className="flex items-center"><div className="w-2 h-2 bg-gray-400 rounded-full mr-3" /> Online consultations</div>
-                  <div className="flex items-center"><div className="w-2 h-2 bg-gray-400 rounded-full mr-3" /> Home visits available</div>
-                  <div className="flex items-center"><div className="w-2 h-2 bg-gray-400 rounded-full mr-3" /> Emergency consultations</div>
-                  <div className="flex items-center"><div className="w-2 h-2 bg-gray-400 rounded-full mr-3" /> Community outreach programs</div>
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3" />{" "}
+                    Online consultations
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3" />{" "}
+                    Home visits available
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3" />{" "}
+                    Emergency consultations
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-3" />{" "}
+                    Community outreach programs
+                  </div>
                 </div>
               </div>
             </div>
@@ -288,8 +349,9 @@ export default function Contact() {
             <div className="bg-white p-8 rounded-3xl border border-gray-100">
               <h3 className="text-2xl mb-8 text-gray-900">Mission Statement</h3>
               <p className="text-sm text-gray-600">
-                At Dr. Alia Misbah Physiotherapy, our mission is to provide high-quality, personalized care
-                to help you achieve optimal wellness and recovery.
+                At Dr. Alia Misbah Physiotherapy, our mission is to provide
+                high-quality, personalized care to help you achieve optimal
+                wellness and recovery.
               </p>
             </div>
           </motion.div>
