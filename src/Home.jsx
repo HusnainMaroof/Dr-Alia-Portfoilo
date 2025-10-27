@@ -20,16 +20,7 @@ import FAQ from "./components/FAQ";
 
 /* ----------------- Small helpers ----------------- */
 
-function SkipLink() {
-  return (
-    <a
-      href="#main"
-      className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] rounded-md bg-gray-900 px-4 py-2 text-white shadow"
-    >
-      Skip to content
-    </a>
-  );
-}
+
 
 function AnimatedBackground() {
   const reduce = useReducedMotion();
