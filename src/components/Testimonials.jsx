@@ -216,7 +216,7 @@ export default function Testimonials() {
 
                 {/* text */}
                 <blockquote className="mt-4 text-gray-700 font-light leading-relaxed">
-                  “{t.text}”
+                  {t.text}
                 </blockquote>
               </motion.figure>
             );
@@ -238,7 +238,7 @@ export default function Testimonials() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             <div>
               <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">
-                <CountUp to={200} suffix="+" />
+                <CountUp to={110} suffix="+" />
               </div>
               <div className="text-gray-400 font-light text-sm sm:text-base">
                 Patients Helped

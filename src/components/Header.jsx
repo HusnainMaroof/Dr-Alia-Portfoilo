@@ -137,7 +137,7 @@ export default function Header() {
                 className="glass-strong hover:bg-gray-900 text-white  px-6 py-2.5 rounded-full transition-all duration-300 border-0"
                 asChild
               >
-                <a href="#booking" className="flex items-center">
+                <a href="https://calendly.com/aaliakhan2255/30min?month=2025-11" target="_blank" className="flex items-center">
                   <span className="font-semibold">Book Consultation</span>
                   <motion.span
                     className="ml-2 inline-block w-1.5 h-1.5 bg-current rounded-full"

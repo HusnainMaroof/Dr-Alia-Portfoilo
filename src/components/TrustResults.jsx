@@ -6,7 +6,7 @@ import { Award, Users, Clock, MapPin, Shield, Star } from "lucide-react";
 const stats = [
   {
     icon: Users,
-    number: "500+",
+    number: "110+",
     label: "Patients Treated",
     description: "Successfully treated in the last 2 years",
   },
@@ -18,7 +18,7 @@ const stats = [
   },
   {
     icon: Clock,
-    number: "7+",
+    number: "5+",
     label: "Years Experience",
     description: "Specialized physiotherapy expertise",
   },
